@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <!-- PeerJS WebRTC Library for real-time collaboration -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     :root {
       --primary: #8b5cf6;
@@ -365,6 +367,154 @@
       }
     }
 
+    /* Online Collaboration Bar */
+    .online-collab-bar {
+      background: linear-gradient(135deg, rgba(245, 243, 255, 0.95), rgba(250, 245, 255, 0.95));
+      border: 1.5px solid #ddd6fe;
+      border-radius: 16px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .online-status-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #9ca3af;
+      transition: background 0.3s ease;
+    }
+    .status-dot.connecting {
+      background: #f59e0b;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+      animation: pulse 1.2s infinite;
+    }
+    .status-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    .online-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .room-badge {
+      background: white;
+      border: 1px solid #c4b5fd;
+      border-radius: 9999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.82rem;
+      color: var(--primary-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .room-code-text {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--grape-purple);
+      letter-spacing: 0.5px;
+    }
+
+    .mini-btn {
+      background: white;
+      border: 1px solid #c4b5fd;
+      color: var(--primary-dark);
+      border-radius: 9999px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mini-btn:hover {
+      background: var(--primary-light);
+    }
+    .mini-btn.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .mini-btn.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .join-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .join-input {
+      border: 1px solid #c4b5fd;
+      border-radius: 9999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      outline: none;
+      width: 130px;
+      background: white;
+      transition: border-color 0.2s ease;
+    }
+    .join-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Remote user cursor on canvas */
+    .remote-cursor {
+      position: absolute;
+      pointer-events: none;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transform: translate(-6px, -6px);
+      transition: left 0.05s linear, top 0.05s linear;
+      opacity: 0;
+    }
+    .remote-cursor.visible {
+      opacity: 1;
+    }
+    .remote-cursor-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ec4899;
+      border: 2px solid white;
+      box-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+    }
+    .remote-cursor-label {
+      background: #ec4899;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+
     /* Mini Game Section */
     .game-section {
       background: var(--card-bg);
@@ -610,12 +760,37 @@
         </div>
       </div>
 
+      <!-- Online Collaboration Bar -->
+      <div class="online-collab-bar">
+        <div class="online-status-group">
+          <span class="status-dot" id="netStatusDot"></span>
+          <span id="netStatusText">혼자 그리는 중</span>
+        </div>
+
+        <div class="online-actions">
+          <div class="room-badge">
+            <span>내 방 코드:</span>
+            <span class="room-code-text" id="myRoomCode">생성 중...</span>
+            <button class="mini-btn" id="btnCopyRoom" title="방 코드 복사">📋 복사</button>
+          </div>
+
+          <div class="join-group">
+            <input type="text" class="join-input" id="inputRoomCode" placeholder="친구 방 코드 입력" />
+            <button class="mini-btn primary" id="btnJoinRoom">🤝 함께 그리기</button>
+          </div>
+        </div>
+      </div>
+
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem;">
-        취미인 그림그리기를 함께 즐겨봐요! 마우스나 스마트폰 터치로 포도나 🙃를 자유롭게 그려보세요.
+        취미인 그림그리기를 함께 즐겨봐요! 친구와 방 코드를 공유하면 <strong>실시간으로 같은 도화지에 동시에</strong> 그릴 수 있어요! 🎨🤝
       </p>
 
-      <div class="canvas-wrapper">
+      <div class="canvas-wrapper" id="canvasWrapper">
         <canvas id="paintCanvas"></canvas>
+        <div class="remote-cursor" id="remoteCursor">
+          <div class="remote-cursor-dot"></div>
+          <div class="remote-cursor-label" id="remoteCursorLabel">🎨 친구</div>
+        </div>
       </div>
 
       <div class="canvas-footer">
@@ -775,14 +950,317 @@
       }
     });
 
-    // 4. Drawing Canvas Logic
+    // 4. Drawing Canvas & Real-time Online Collaboration Logic
     const canvas = document.getElementById('paintCanvas');
     const ctx = canvas.getContext('2d');
     let currentColor = '#7c3aed';
     let isDrawing = false;
+    let lastCursorBroadcast = 0;
+
+    // Remote drawing tracking
+    let isRemoteDrawing = false;
+    let remoteLastX = 0;
+    let remoteLastY = 0;
+    let remoteCursorTimer = null;
+
+    const remoteCursor = document.getElementById('remoteCursor');
+    const remoteCursorLabel = document.getElementById('remoteCursorLabel');
+    const netStatusDot = document.getElementById('netStatusDot');
+    const netStatusText = document.getElementById('netStatusText');
+    const myRoomCodeEl = document.getElementById('myRoomCode');
+    const inputRoomCode = document.getElementById('inputRoomCode');
+    const btnCopyRoom = document.getElementById('btnCopyRoom');
+    const btnJoinRoom = document.getElementById('btnJoinRoom');
+
+    // PeerJS Networking
+    let peer = null;
+    let myPeerId = '';
+    const activeConnections = [];
+
+    function setNetStatus(status, text) {
+      if (!netStatusDot || !netStatusText) return;
+      netStatusDot.className = 'status-dot ' + status;
+      netStatusText.textContent = text;
+    }
+
+    function updateRemoteCursor(x, y, color, isDrawingState) {
+      if (!remoteCursor) return;
+      remoteCursor.style.left = x + 'px';
+      remoteCursor.style.top = y + 'px';
+      remoteCursor.classList.add('visible');
+
+      const dot = remoteCursor.querySelector('.remote-cursor-dot');
+      if (dot && color) {
+        dot.style.background = color;
+        dot.style.boxShadow = `0 0 8px ${color}`;
+      }
+      if (remoteCursorLabel) {
+        if (color) remoteCursorLabel.style.background = color;
+        remoteCursorLabel.textContent = isDrawingState ? '✏️ 친구 그리는 중' : '🎨 친구';
+      }
+
+      clearTimeout(remoteCursorTimer);
+      remoteCursorTimer = setTimeout(() => {
+        remoteCursor.classList.remove('visible');
+      }, 2500);
+    }
+
+    // Local multi-tab channel (instant 0ms sync for same-machine tabs)
+    let localChannel = null;
+
+    function setupBroadcastChannel(channelId) {
+      if (typeof BroadcastChannel === 'undefined') return;
+      if (localChannel) {
+        try { localChannel.close(); } catch (e) {}
+      }
+      try {
+        localChannel = new BroadcastChannel('grape_collab_' + channelId);
+        localChannel.onmessage = (event) => {
+          if (event.data && event.data.sender !== myPeerId) {
+            handleRemoteData(event.data);
+            setNetStatus('connected', `🟢 실시간 협업 중 (로컬 탭 연결됨)`);
+          }
+        };
+      } catch (e) {
+        console.warn('BroadcastChannel error:', e);
+      }
+    }
+
+    function broadcastData(payload) {
+      const packet = { ...payload, sender: myPeerId };
+
+      // 1. Send via local BroadcastChannel (cross-tab)
+      if (localChannel) {
+        try {
+          localChannel.postMessage(packet);
+        } catch (e) {}
+      }
+
+      // 2. Send via WebRTC DataChannel (across internet / devices)
+      for (let i = activeConnections.length - 1; i >= 0; i--) {
+        const conn = activeConnections[i];
+        if (conn && conn.open) {
+          try {
+            conn.send(payload);
+          } catch (err) {
+            console.error('Broadcasting error:', err);
+          }
+        } else {
+          activeConnections.splice(i, 1);
+        }
+      }
+    }
+
+    function handleRemoteData(data) {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+
+      if (data.type === 'stroke_start') {
+        isRemoteDrawing = true;
+        remoteLastX = data.x * rect.width;
+        remoteLastY = data.y * rect.height;
+        updateRemoteCursor(remoteLastX, remoteLastY, data.color || '#ec4899', true);
+      } else if (data.type === 'stroke_draw') {
+        if (!isRemoteDrawing) {
+          isRemoteDrawing = true;
+          remoteLastX = data.x * rect.width;
+          remoteLastY = data.y * rect.height;
+        }
+        const curX = data.x * rect.width;
+        const curY = data.y * rect.height;
+
+        ctx.save();
+        ctx.strokeStyle = data.color || '#ec4899';
+        ctx.lineWidth = data.width || 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(remoteLastX, remoteLastY);
+        ctx.lineTo(curX, curY);
+        ctx.stroke();
+        ctx.restore();
+
+        remoteLastX = curX;
+        remoteLastY = curY;
+        updateRemoteCursor(curX, curY, data.color || '#ec4899', true);
+      } else if (data.type === 'stroke_end') {
+        isRemoteDrawing = false;
+      } else if (data.type === 'cursor_move') {
+        const curX = data.x * rect.width;
+        const curY = data.y * rect.height;
+        updateRemoteCursor(curX, curY, data.color || '#ec4899', false);
+      } else if (data.type === 'clear') {
+        ctx.clearRect(0, 0, rect.width, rect.height);
+      } else if (data.type === 'sync_image' && data.data) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = data.data;
+      }
+    }
+
+    function setupConnection(conn) {
+      setNetStatus('connecting', '친구와 연결 중...');
+
+      conn.on('open', () => {
+        if (!activeConnections.includes(conn)) {
+          activeConnections.push(conn);
+        }
+        setNetStatus('connected', `🟢 실시간 협업 중 (${activeConnections.length}명 접속)`);
+
+        // Send current canvas image to the newly connected friend
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          try {
+            conn.send({
+              type: 'sync_image',
+              data: canvas.toDataURL()
+            });
+          } catch (e) {}
+        }
+      });
+
+      conn.on('data', (data) => {
+        handleRemoteData(data);
+      });
+
+      conn.on('close', () => {
+        const idx = activeConnections.indexOf(conn);
+        if (idx !== -1) activeConnections.splice(idx, 1);
+        if (activeConnections.length === 0) {
+          setNetStatus('offline', '혼자 그리는 중 (연결 종료)');
+          if (remoteCursor) remoteCursor.classList.remove('visible');
+        } else {
+          setNetStatus('connected', `🟢 실시간 협업 중 (${activeConnections.length}명 접속)`);
+        }
+      });
+
+      conn.on('error', (err) => {
+        console.error('Peer connection error:', err);
+      });
+    }
+
+    let isPeerInitialized = false;
+
+    function initPeer() {
+      if (isPeerInitialized) return;
+      isPeerInitialized = true;
+
+      // 1. Immediately generate and display a unique room ID
+      const randCode = Math.floor(1000 + Math.random() * 9000);
+      myPeerId = `grape-${randCode}`;
+      if (myRoomCodeEl) {
+        myRoomCodeEl.textContent = myPeerId;
+      }
+
+      // 2. Immediately enable BroadcastChannel for instant local cross-tab sync
+      setupBroadcastChannel(myPeerId);
+      setNetStatus('offline', '혼자 그리는 중 (방 준비 완료)');
+
+      // 3. Check URL hash for auto-join (#room=xxxx)
+      try {
+        const urlParams = new URLSearchParams(window.location.hash.slice(1));
+        const roomToJoin = urlParams.get('room');
+        if (roomToJoin && roomToJoin !== myPeerId) {
+          inputRoomCode.value = roomToJoin;
+          setTimeout(() => connectToRoom(roomToJoin), 500);
+        }
+      } catch (e) {}
+
+      // 4. Initialize PeerJS for WebRTC online collaboration
+      if (typeof Peer === 'undefined') {
+        console.warn('PeerJS library not loaded. Local cross-tab sync is active.');
+        return;
+      }
+
+      try {
+        peer = new Peer(myPeerId, {
+          debug: 1
+        });
+
+        peer.on('open', (id) => {
+          myPeerId = id;
+          if (myRoomCodeEl) myRoomCodeEl.textContent = id;
+          setNetStatus('offline', '혼자 그리는 중 (방 준비 완료)');
+        });
+
+        peer.on('connection', (conn) => {
+          setupConnection(conn);
+        });
+
+        peer.on('error', (err) => {
+          console.warn('PeerJS network warning:', err);
+          if (err.type === 'peer-unavailable') {
+            alert('입력한 방 코드의 친구를 찾을 수 없습니다. 코드를 다시 확인해 주세요!');
+          }
+        });
+      } catch (err) {
+        console.warn('PeerJS init failed, continuing in local mode:', err);
+      }
+    }
+
+    function connectToRoom(targetId) {
+      if (!targetId) return;
+      targetId = targetId.trim();
+
+      if (targetId === myPeerId) {
+        alert('자신의 방 코드입니다. 다른 브라우저 창이나 친구의 방 코드를 입력해 주세요!');
+        return;
+      }
+
+      setNetStatus('connecting', `${targetId} 방에 연결 중...`);
+
+      // 1. Connect local BroadcastChannel immediately
+      setupBroadcastChannel(targetId);
+      setNetStatus('connected', `🟢 실시간 협업 중 (${targetId} 방)`);
+
+      // 2. Connect via PeerJS WebRTC DataChannel if available
+      if (peer && !peer.destroyed) {
+        try {
+          const conn = peer.connect(targetId, { reliable: true });
+          setupConnection(conn);
+        } catch (e) {
+          console.warn('Peer connection attempt failed:', e);
+        }
+      }
+    }
+
+    // Join Button
+    btnJoinRoom.addEventListener('click', () => {
+      const code = inputRoomCode.value.trim();
+      if (!code) {
+        alert('참여할 친구의 방 코드를 입력해 주세요! (예: grape-1234)');
+        return;
+      }
+      connectToRoom(code);
+    });
+
+    inputRoomCode.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        btnJoinRoom.click();
+      }
+    });
+
+    // Copy Room Code Button
+    btnCopyRoom.addEventListener('click', () => {
+      if (!myPeerId) return;
+      navigator.clipboard.writeText(myPeerId).then(() => {
+        const originalText = btnCopyRoom.textContent;
+        btnCopyRoom.textContent = '✔ 복사됨!';
+        btnCopyRoom.style.background = '#dcfce7';
+        btnCopyRoom.style.borderColor = '#86efac';
+        setTimeout(() => {
+          btnCopyRoom.textContent = originalText;
+          btnCopyRoom.style.background = '';
+          btnCopyRoom.style.borderColor = '';
+        }, 1800);
+      }).catch(() => {
+        prompt('방 코드를 복사하세요:', myPeerId);
+      });
+    });
 
     function resizeCanvas() {
-      // Preserve existing drawing content if any
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = canvas.width;
       tempCanvas.height = canvas.height;
@@ -806,7 +1284,14 @@
       }
     }
 
-    window.addEventListener('load', resizeCanvas);
+    // Trigger canvas resize and room initialization immediately
+    resizeCanvas();
+    initPeer();
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      initPeer();
+    });
     window.addEventListener('resize', resizeCanvas);
 
     function getCanvasPos(e) {
@@ -826,20 +1311,57 @@
       ctx.moveTo(x, y);
       ctx.strokeStyle = currentColor;
       ctx.lineWidth = 4;
+
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        broadcastData({
+          type: 'stroke_start',
+          x: x / rect.width,
+          y: y / rect.height,
+          color: currentColor,
+          width: 4
+        });
+      }
     }
 
     function draw(e) {
-      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      if (!isDrawing) {
+        // Broadcast mouse hover position throttled
+        const now = performance.now();
+        if (now - lastCursorBroadcast > 50 && rect.width > 0) {
+          const { x, y } = getCanvasPos(e);
+          broadcastData({
+            type: 'cursor_move',
+            x: x / rect.width,
+            y: y / rect.height,
+            color: currentColor
+          });
+          lastCursorBroadcast = now;
+        }
+        return;
+      }
       if (e.cancelable) e.preventDefault();
       const { x, y } = getCanvasPos(e);
       ctx.lineTo(x, y);
       ctx.stroke();
+
+      if (rect.width > 0 && rect.height > 0) {
+        broadcastData({
+          type: 'stroke_draw',
+          x: x / rect.width,
+          y: y / rect.height,
+          color: currentColor,
+          width: 4
+        });
+      }
     }
 
     function stopDrawing() {
       if (!isDrawing) return;
       isDrawing = false;
       ctx.closePath();
+      broadcastData({ type: 'stroke_end' });
     }
 
     // Mouse Events
@@ -866,6 +1388,7 @@
     document.getElementById('clearBtn').addEventListener('click', () => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
+      broadcastData({ type: 'clear' });
     });
 
     // Download Button
