@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>배고픈 포도의 아틀리에 🍇🙃</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8b5cf6;
+      --primary-dark: #6d28d9;
+      --primary-light: #ede9fe;
+      --grape-purple: #7c3aed;
+      --grape-accent: #a855f7;
+      --bg-gradient: linear-gradient(135deg, #fbf7ff 0%, #f3e8ff 50%, #fae8ff 100%);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(233, 213, 255, 0.7);
+      --text-main: #2e1065;
+      --text-muted: #6b7280;
+      --shadow-sm: 0 4px 6px -1px rgba(124, 58, 237, 0.08);
+      --shadow-lg: 0 10px 25px -3px rgba(124, 58, 237, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+      padding: 2.5rem 1rem;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    body.flipped {
+      transform: rotate(180deg);
+    }
+
+    /* Floating background shapes */
+    .bg-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .shape-1 {
+      width: 320px;
+      height: 320px;
+      background: #c084fc;
+      top: -50px;
+      left: -50px;
+    }
+    .shape-2 {
+      width: 380px;
+      height: 380px;
+      background: #f472b6;
+      bottom: -100px;
+      right: -80px;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Hero Profile Card */
+    .profile-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--card-border);
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      position: relative;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.2rem;
+    }
+
+    .avatar-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ddd6fe, #c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.2);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .avatar-circle:hover {
+      transform: scale(1.1) rotate(-10deg);
+    }
+
+    .emoji-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 46px;
+      height: 46px;
+      background: white;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      animation: wiggle 3s infinite ease-in-out;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-15deg) scale(1.12); }
+      40% { transform: rotate(15deg) scale(1.12); }
+      60% { transform: rotate(0deg); }
+    }
+
+    .nickname {
+      font-family: 'Gaegu', cursive, sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--grape-purple);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .tagline {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .badge-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.6rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* Interactive Emoji Card */
+    .emoji-special-card {
+      background: linear-gradient(135deg, rgba(237, 233, 254, 0.9), rgba(250, 232, 255, 0.9));
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      padding: 1.6rem;
+      text-align: center;
+    }
+
+    .action-btn {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    }
+
+    .action-btn:active {
+      transform: scale(0.96);
+    }
+
+    .action-btn.secondary {
+      background: white;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .action-btn.secondary:hover {
+      background: var(--primary-light);
+    }
+
+    /* Drawing Studio Section */
+    .canvas-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .canvas-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .color-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .color-dot.active {
+      transform: scale(1.25);
+      outline: 2px solid var(--primary);
+    }
+
+    .canvas-wrapper {
+      background: #ffffff;
+      border: 2px dashed #ddd6fe;
+      border-radius: 16px;
+      overflow: hidden;
+      touch-action: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    canvas {
+      width: 100%;
+      height: 320px;
+      background: #ffffff;
+      cursor: crosshair;
+      display: block;
+    }
+
+    .canvas-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Floating Emoji Particle */
+    .particle {
+      position: fixed;
+      font-size: 2rem;
+      pointer-events: none;
+      z-index: 9999;
+      user-select: none;
+      animation: floatUp 2s forwards cubic-bezier(0.12, 0, 0.39, 0);
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(0.6);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-180px) rotate(360deg) scale(1.4);
+      }
+    }
+
+    /* Mini Game Section */
+    .game-section {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--card-border);
+      border-radius: 24px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 0.6rem 0.5rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(124, 58, 237, 0.06);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .game-canvas-wrapper {
+      position: relative;
+      background: linear-gradient(180deg, #f5f3ff 0%, #faf5ff 100%);
+      border: 2px dashed #c4b5fd;
+      border-radius: 18px;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 330px;
+      display: block;
+      cursor: ew-resize;
+    }
+
+    .game-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+      z-index: 10;
+      transition: opacity 0.25s ease;
+    }
+
+    .game-overlay.hidden {
+      display: none;
+    }
+
+    .game-overlay-title {
+      font-family: 'Gaegu', cursive, sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--grape-purple);
+      margin-bottom: 0.4rem;
+    }
+
+    .game-overlay-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      max-width: 420px;
+      line-height: 1.55;
+    }
+
+    .items-legend {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .item-chip {
+      background: white;
+      border: 1px solid #ddd6fe;
+      border-radius: 9999px;
+      padding: 0.35rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .game-controls-mobile {
+      display: none;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    .touch-btn {
+      flex: 1;
+      max-width: 150px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: white;
+      border: 1.5px solid var(--primary);
+      border-radius: 14px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.15s ease;
+    }
+    .touch-btn:active {
+      background: var(--primary-light);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 1.5rem 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .nickname {
+        font-size: 2.3rem;
+      }
+      .profile-card {
+        padding: 2rem 1.25rem;
+      }
+      .canvas-section, .game-section {
+        padding: 1.25rem;
+      }
+      canvas {
+        height: 260px;
+      }
+      .game-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .game-controls-mobile {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+
+  <div class="container">
+    <!-- Hero Profile Card -->
+    <header class="profile-card">
+      <div class="avatar-wrapper">
+        <div class="avatar-circle" id="avatar" title="포도를 클릭해보세요!">🍇</div>
+        <div class="emoji-badge" id="emojiBadge" title="내가 제일 좋아하는 이모지 🙃">🙃</div>
+      </div>
+
+      <h1 class="nickname">
+        <span>배고픈 포도</span>
+        <span style="font-size: 2rem;">🍇</span>
+      </h1>
+      <p class="tagline">"맛있는 영감과 새로운 상상에 배고픈 보랏빛 창작자입니다!"</p>
+
+      <div class="badge-group">
+        <span class="badge">🎨 그림 그리기 취미</span>
+        <span class="badge">🙃 거꾸로 보는 시선</span>
+        <span class="badge">🍇 보라색 감성</span>
+      </div>
+    </header>
+
+    <!-- Key Info Cards -->
+    <div class="info-grid">
+      <div class="card">
+        <span class="card-icon">🍇</span>
+        <h2 class="card-title">닉네임: 배고픈 포도</h2>
+        <p class="card-desc">
+          한 알 한 알 달콤한 영감이 가득 차오르기를 바라는 호기심 많은 포도예요. 매일 새로운 재미와 맛있는 아이디어를 찾아다닙니다!
+        </p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🎨</span>
+        <h2 class="card-title">취미: 그림그리기</h2>
+        <p class="card-desc">
+          손끝으로 스케치북을 채색할 때가 가장 행복해요. 생각을 색으로 물들이고 나만의 세계를 캔버스에 담아냅니다.
+        </p>
+      </div>
+
+      <div class="card emoji-special-card">
+        <span class="card-icon">🙃</span>
+        <h2 class="card-title">최애 이모지: 🙃</h2>
+        <p class="card-desc">
+          일상도 거꾸로 뒤집어 보면 더 기발하고 재밌어요! 엉뚱하지만 유쾌한 에너지를 전해주는 마법의 이모지입니다.
+        </p>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+          <button class="action-btn" id="flipWorldBtn">🙃 세상 뒤집기</button>
+          <button class="action-btn secondary" id="spawnEmojiBtn">이모지 팡팡! ✨</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawing Studio Section -->
+    <section class="canvas-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>🎨 배고픈 포도의 미니 아틀리에</span>
+        </h2>
+        <div class="canvas-controls">
+          <!-- Colors -->
+          <div class="color-dot active" style="background: #7c3aed;" data-color="#7c3aed" title="포도 보라"></div>
+          <div class="color-dot" style="background: #ec4899;" data-color="#ec4899" title="핑크"></div>
+          <div class="color-dot" style="background: #10b981;" data-color="#10b981" title="포도 잎사귀 초록"></div>
+          <div class="color-dot" style="background: #f59e0b;" data-color="#f59e0b" title="오렌지"></div>
+          <div class="color-dot" style="background: #1e1b4b;" data-color="#1e1b4b" title="다크 네이비"></div>
+          <!-- Clear Button -->
+          <button class="action-btn secondary" id="clearBtn" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; margin: 0;">
+            지우기 🧼
+          </button>
+        </div>
+      </div>
+
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+        취미인 그림그리기를 함께 즐겨봐요! 마우스나 스마트폰 터치로 포도나 🙃를 자유롭게 그려보세요.
+      </p>
+
+      <div class="canvas-wrapper">
+        <canvas id="paintCanvas"></canvas>
+      </div>
+
+      <div class="canvas-footer">
+        <span>💡 팁: 마우스나 화면 터치로 슥슥 그릴 수 있습니다!</span>
+        <button class="action-btn" id="downloadBtn" style="padding: 0.4rem 1rem; font-size: 0.85rem; margin: 0;">
+          내 그림 저장 📥
+        </button>
+      </div>
+    </section>
+
+    <!-- Mini Game Section -->
+    <section class="game-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>🎮 배고픈 포도의 간식 받기 대작전!</span>
+        </h2>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">
+          마우스/터치 좌우 이동 또는 방향키 (← →)
+        </span>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="game-stats">
+        <div class="stat-box">
+          <div class="stat-label">🏆 현재 점수</div>
+          <div class="stat-value" id="gameScore">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">❤️ 남은 하트</div>
+          <div class="stat-value" id="gameLives">❤️❤️❤️</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">⏳ 남은 시간</div>
+          <div class="stat-value"><span id="gameTimer">30</span>초</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">🥇 최고 기록</div>
+          <div class="stat-value" id="gameHighScore">0</div>
+        </div>
+      </div>
+
+      <!-- Canvas Area & Overlay -->
+      <div class="game-canvas-wrapper" id="gameCanvasWrapper">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Start Overlay -->
+        <div class="game-overlay" id="gameStartOverlay">
+          <div style="font-size: 3rem; margin-bottom: 0.4rem;">🍇🏃‍♂️💨</div>
+          <h3 class="game-overlay-title">배고픈 포도의 간식 타임!</h3>
+          <p class="game-overlay-desc">
+            배고픈 포도가 달콤한 간식을 기다리고 있어요!<br/>
+            하늘에서 떨어지는 맛있는 포도와 영감 아이템을 바구니로 받아주세요.
+          </p>
+          <div class="items-legend">
+            <span class="item-chip">🍇 포도 (+10점)</span>
+            <span class="item-chip">🎨 팔레트 (+20점)</span>
+            <span class="item-chip">🙃 거꾸로 (+30점)</span>
+            <span class="item-chip" style="color: #ef4444;">🪨 돌멩이 (-1❤️)</span>
+          </div>
+          <button class="action-btn" id="gameStartBtn" style="font-size: 1.05rem; padding: 0.75rem 1.8rem;">
+            🎮 게임 시작하기!
+          </button>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div class="game-overlay hidden" id="gameOverOverlay">
+          <div id="gameOverEmoji" style="font-size: 3.2rem; margin-bottom: 0.3rem;">🎉</div>
+          <h3 class="game-overlay-title" id="gameOverTitle">게임 종료!</h3>
+          <p class="game-overlay-desc" id="gameOverDesc">
+            최종 점수: <strong>0점</strong>
+          </p>
+          <button class="action-btn" id="gameRestartBtn" style="font-size: 1.05rem; padding: 0.75rem 1.8rem;">
+            🔄 다시 도전하기!
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile On-screen buttons -->
+      <div class="game-controls-mobile">
+        <button class="touch-btn" id="btnMoveLeft">◀ 왼쪽으로</button>
+        <button class="touch-btn" id="btnMoveRight">오른쪽으로 ▶</button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2026 <strong>배고픈 포도</strong>의 아틀리에 • 세상은 거꾸로 볼 때 제일 재밌어 🙃</p>
+    </footer>
+  </div>
+
+  <script>
+    // 1. Emoji pop effect function
+    function createEmojiParticle(x, y, emojiChar = '🙃') {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.textContent = emojiChar;
+      particle.style.left = (x - 16) + 'px';
+      particle.style.top = (y - 16) + 'px';
+      document.body.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 1900);
+    }
+
+    // Avatar bounce & emoji burst
+    const avatar = document.getElementById('avatar');
+    avatar.addEventListener('click', (e) => {
+      const rect = avatar.getBoundingClientRect();
+      const emojis = ['🍇', '🍇', '✨', '💜'];
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+          const offsetX = (Math.random() - 0.5) * 80;
+          const offsetY = (Math.random() - 0.5) * 40;
+          const randEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+          createEmojiParticle(rect.left + rect.width / 2 + offsetX, rect.top + offsetY, randEmoji);
+        }, i * 60);
+      }
+    });
+
+    const emojiBadge = document.getElementById('emojiBadge');
+    emojiBadge.addEventListener('click', (e) => {
+      const rect = emojiBadge.getBoundingClientRect();
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+          const offsetX = (Math.random() - 0.5) * 60;
+          createEmojiParticle(rect.left + 20 + offsetX, rect.top, '🙃');
+        }, i * 60);
+      }
+    });
+
+    // 2. Flip World Button
+    const flipBtn = document.getElementById('flipWorldBtn');
+    let isFlipped = false;
+    flipBtn.addEventListener('click', () => {
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        document.body.classList.add('flipped');
+        flipBtn.textContent = '🙃 원래대로 돌리기';
+      } else {
+        document.body.classList.remove('flipped');
+        flipBtn.textContent = '🙃 세상 뒤집기';
+      }
+    });
+
+    // 3. Spawn Emoji Explosion
+    const spawnBtn = document.getElementById('spawnEmojiBtn');
+    spawnBtn.addEventListener('click', () => {
+      const emojis = ['🙃', '🍇', '🎨', '✨'];
+      for (let i = 0; i < 16; i++) {
+        setTimeout(() => {
+          const rx = Math.random() * (window.innerWidth - 60) + 30;
+          const ry = Math.random() * (window.innerHeight * 0.6) + (window.innerHeight * 0.2);
+          const char = emojis[Math.floor(Math.random() * emojis.length)];
+          createEmojiParticle(rx, ry, char);
+        }, i * 50);
+      }
+    });
+
+    // 4. Drawing Canvas Logic
+    const canvas = document.getElementById('paintCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentColor = '#7c3aed';
+    let isDrawing = false;
+
+    function resizeCanvas() {
+      // Preserve existing drawing content if any
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      if (canvas.width > 0 && canvas.height > 0) {
+        tempCtx.drawImage(canvas, 0, 0);
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = currentColor;
+
+      if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+        ctx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+      }
+    }
+
+    window.addEventListener('load', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas);
+
+    function getCanvasPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const { x, y } = getCanvasPos(e);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 4;
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      if (e.cancelable) e.preventDefault();
+      const { x, y } = getCanvasPos(e);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      if (!isDrawing) return;
+      isDrawing = false;
+      ctx.closePath();
+    }
+
+    // Mouse Events
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
+
+    // Touch Events
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDrawing);
+
+    // Color Selector
+    const colorDots = document.querySelectorAll('.color-dot');
+    colorDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        colorDots.forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+        currentColor = dot.getAttribute('data-color');
+      });
+    });
+
+    // Clear Button
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    });
+
+    // Download Button
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+      const exportCtx = exportCanvas.getContext('2d');
+
+      exportCtx.fillStyle = '#ffffff';
+      exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      exportCtx.drawImage(canvas, 0, 0);
+
+      const link = document.createElement('a');
+      link.download = '배고픈_포도의_그림.png';
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // ==========================================
+    // 5. Mini Game: 배고픈 포도의 간식 받기 대작전
+    // ==========================================
+    const gCanvas = document.getElementById('gameCanvas');
+    const gCtx = gCanvas.getContext('2d');
+    const gWrapper = document.getElementById('gameCanvasWrapper');
+    const startOverlay = document.getElementById('gameStartOverlay');
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    const gameStartBtn = document.getElementById('gameStartBtn');
+    const gameRestartBtn = document.getElementById('gameRestartBtn');
+
+    const scoreEl = document.getElementById('gameScore');
+    const livesEl = document.getElementById('gameLives');
+    const timerEl = document.getElementById('gameTimer');
+    const highScoreEl = document.getElementById('gameHighScore');
+    const gameOverTitle = document.getElementById('gameOverTitle');
+    const gameOverDesc = document.getElementById('gameOverDesc');
+    const gameOverEmoji = document.getElementById('gameOverEmoji');
+
+    let highScore = parseInt(localStorage.getItem('hungry_grape_high_score') || '0', 10);
+    highScoreEl.textContent = highScore;
+
+    let gameRunning = false;
+    let score = 0;
+    let lives = 3;
+    let timeLeft = 30;
+    let gameTimerId = null;
+    let animFrameId = null;
+    let lastSpawnTime = 0;
+
+    let canvasWidth = 600;
+    let canvasHeight = 330;
+
+    const player = {
+      x: 300,
+      y: 285,
+      width: 60,
+      height: 45,
+      targetX: 300
+    };
+
+    let fallingItems = [];
+    let floatingTexts = [];
+    let shakeMagnitude = 0;
+
+    const keys = { left: false, right: false };
+
+    function resizeGameCanvas() {
+      const rect = gCanvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvasWidth = rect.width;
+      canvasHeight = rect.height;
+      gCanvas.width = canvasWidth * dpr;
+      gCanvas.height = canvasHeight * dpr;
+      gCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      player.y = canvasHeight - 45;
+      if (!gameRunning) {
+        player.x = canvasWidth / 2;
+        player.targetX = canvasWidth / 2;
+        renderGameFrame();
+      }
+    }
+
+    window.addEventListener('resize', resizeGameCanvas);
+
+    function updateLivesDisplay() {
+      let hearts = '';
+      for (let i = 0; i < 3; i++) {
+        hearts += i < lives ? '❤️' : '🤍';
+      }
+      livesEl.textContent = hearts;
+    }
+
+    function spawnItem() {
+      const roll = Math.random() * 100;
+      let itemType;
+
+      if (roll < 45) {
+        itemType = { type: 'grape', emoji: '🍇', points: 10, isBomb: false, color: '#8b5cf6' };
+      } else if (roll < 70) {
+        itemType = { type: 'palette', emoji: '🎨', points: 20, isBomb: false, color: '#ec4899' };
+      } else if (roll < 85) {
+        itemType = { type: 'upside', emoji: '🙃', points: 30, isBomb: false, color: '#7c3aed' };
+      } else {
+        itemType = { type: 'rock', emoji: '🪨', points: 0, isBomb: true, color: '#ef4444' };
+      }
+
+      const margin = 35;
+      const x = margin + Math.random() * (canvasWidth - margin * 2);
+      const speed = 2.4 + Math.random() * 2.2 + (30 - timeLeft) * 0.08;
+
+      fallingItems.push({
+        x: x,
+        y: -25,
+        speed: speed,
+        angle: (Math.random() - 0.5) * 0.4,
+        rotSpeed: (Math.random() - 0.5) * 0.06,
+        ...itemType
+      });
+    }
+
+    function addFloatingText(x, y, text, color) {
+      floatingTexts.push({
+        x: x,
+        y: y,
+        text: text,
+        color: color,
+        opacity: 1,
+        life: 40
+      });
+    }
+
+    function startGame() {
+      score = 0;
+      lives = 3;
+      timeLeft = 30;
+      fallingItems = [];
+      floatingTexts = [];
+      shakeMagnitude = 0;
+      player.x = canvasWidth / 2;
+      player.targetX = canvasWidth / 2;
+
+      scoreEl.textContent = score;
+      timerEl.textContent = timeLeft;
+      updateLivesDisplay();
+
+      startOverlay.classList.add('hidden');
+      gameOverOverlay.classList.add('hidden');
+
+      gameRunning = true;
+      lastSpawnTime = performance.now();
+
+      clearInterval(gameTimerId);
+      gameTimerId = setInterval(() => {
+        if (!gameRunning) return;
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          endGame('time');
+        }
+      }, 1000);
+
+      cancelAnimationFrame(animFrameId);
+      animFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    function endGame(reason) {
+      gameRunning = false;
+      clearInterval(gameTimerId);
+      cancelAnimationFrame(animFrameId);
+
+      const isNewRecord = score > highScore;
+      if (isNewRecord) {
+        highScore = score;
+        localStorage.setItem('hungry_grape_high_score', highScore);
+        highScoreEl.textContent = highScore;
+      }
+
+      if (reason === 'lives') {
+        gameOverEmoji.textContent = '🥺';
+        gameOverTitle.textContent = '하트를 모두 잃었어요!';
+        gameOverDesc.innerHTML = `돌멩이에 부딪혀 포도가 아파해요.<br/>최종 점수: <strong style="color: var(--grape-purple); font-size: 1.3rem;">${score}점</strong>${isNewRecord ? ' 🌟 <strong>(신기록 달성!)</strong>' : ''}`;
+      } else {
+        if (score >= 300) {
+          gameOverEmoji.textContent = '🥳';
+          gameOverTitle.textContent = '배고픈 포도가 아주 배불러요!';
+        } else if (score >= 150) {
+          gameOverEmoji.textContent = '😋';
+          gameOverTitle.textContent = '맛있는 간식을 든든하게 먹었어요!';
+        } else {
+          gameOverEmoji.textContent = '🍇';
+          gameOverTitle.textContent = '조금 더 먹을 수 있을 것 같아요!';
+        }
+        gameOverDesc.innerHTML = `30초 동안 모은 최종 점수: <strong style="color: var(--grape-purple); font-size: 1.3rem;">${score}점</strong>${isNewRecord ? ' 🌟 <strong>(최고 기록 갱신!)</strong>' : ''}`;
+      }
+
+      gameOverOverlay.classList.remove('hidden');
+    }
+
+    function renderGameFrame() {
+      gCtx.save();
+
+      // Screen shake effect on damage
+      if (shakeMagnitude > 0) {
+        const sx = (Math.random() - 0.5) * shakeMagnitude;
+        const sy = (Math.random() - 0.5) * shakeMagnitude;
+        gCtx.translate(sx, sy);
+        shakeMagnitude *= 0.85;
+        if (shakeMagnitude < 0.5) shakeMagnitude = 0;
+      }
+
+      // Background clear
+      gCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+      // Cute grass / table floor at the bottom
+      gCtx.fillStyle = 'rgba(237, 233, 254, 0.6)';
+      gCtx.beginPath();
+      gCtx.roundRect(0, canvasHeight - 20, canvasWidth, 20, [8, 8, 0, 0]);
+      gCtx.fill();
+
+      // Draw Falling Items
+      for (let i = 0; i < fallingItems.length; i++) {
+        const item = fallingItems[i];
+        gCtx.save();
+        gCtx.translate(item.x, item.y);
+        gCtx.rotate(item.angle);
+        gCtx.font = '28px sans-serif';
+        gCtx.textAlign = 'center';
+        gCtx.textBaseline = 'middle';
+        gCtx.fillText(item.emoji, 0, 0);
+        gCtx.restore();
+      }
+
+      // Draw Player: Hungry Grape in a basket
+      gCtx.save();
+      gCtx.translate(player.x, player.y);
+
+      // Basket
+      gCtx.font = '36px sans-serif';
+      gCtx.textAlign = 'center';
+      gCtx.textBaseline = 'middle';
+      gCtx.fillText('🧺', 0, 10);
+
+      // Grape face in basket
+      gCtx.font = '26px sans-serif';
+      gCtx.fillText('🍇', 0, -8);
+      gCtx.restore();
+
+      // Draw Floating Feedback Texts
+      for (let i = 0; i < floatingTexts.length; i++) {
+        const ft = floatingTexts[i];
+        gCtx.save();
+        gCtx.font = 'bold 16px "Pretendard", sans-serif';
+        gCtx.fillStyle = ft.color;
+        gCtx.globalAlpha = Math.max(0, ft.opacity);
+        gCtx.textAlign = 'center';
+        gCtx.fillText(ft.text, ft.x, ft.y);
+        gCtx.restore();
+      }
+
+      gCtx.restore();
+    }
+
+    function gameLoop(timestamp) {
+      if (!gameRunning) return;
+
+      // Handle keyboard movement
+      if (keys.left) player.targetX -= 8;
+      if (keys.right) player.targetX += 8;
+
+      // Clamp targetX
+      const halfW = 32;
+      player.targetX = Math.max(halfW, Math.min(canvasWidth - halfW, player.targetX));
+
+      // Smooth player movement towards targetX
+      player.x += (player.targetX - player.x) * 0.25;
+
+      // Spawn items periodically
+      const spawnInterval = Math.max(500, 850 - (30 - timeLeft) * 12);
+      if (timestamp - lastSpawnTime > spawnInterval) {
+        spawnItem();
+        lastSpawnTime = timestamp;
+      }
+
+      // Update falling items
+      for (let i = fallingItems.length - 1; i >= 0; i--) {
+        const item = fallingItems[i];
+        item.y += item.speed;
+        item.angle += item.rotSpeed;
+
+        // Check collision with player
+        const hitDistX = Math.abs(item.x - player.x);
+        const hitDistY = Math.abs(item.y - player.y);
+
+        if (hitDistX < 36 && hitDistY < 28) {
+          // Collision!
+          if (item.isBomb) {
+            lives--;
+            updateLivesDisplay();
+            shakeMagnitude = 14;
+            addFloatingText(player.x, player.y - 30, '-1 ❤️', '#ef4444');
+            if (lives <= 0) {
+              fallingItems.splice(i, 1);
+              renderGameFrame();
+              endGame('lives');
+              return;
+            }
+          } else {
+            score += item.points;
+            scoreEl.textContent = score;
+            addFloatingText(player.x, player.y - 30, `+${item.points}`, item.color);
+            if (item.type === 'upside') {
+              createEmojiParticle(player.x + gCanvas.getBoundingClientRect().left, player.y + gCanvas.getBoundingClientRect().top, '🙃');
+            }
+          }
+          fallingItems.splice(i, 1);
+          continue;
+        }
+
+        // Remove item if fallen off screen
+        if (item.y > canvasHeight + 30) {
+          fallingItems.splice(i, 1);
+        }
+      }
+
+      // Update floating texts
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y -= 1.2;
+        ft.life--;
+        ft.opacity = ft.life / 40;
+        if (ft.life <= 0) {
+          floatingTexts.splice(i, 1);
+        }
+      }
+
+      renderGameFrame();
+      animFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    // Controls: Mouse
+    gWrapper.addEventListener('mousemove', (e) => {
+      if (!gameRunning) return;
+      const rect = gCanvas.getBoundingClientRect();
+      player.targetX = e.clientX - rect.left;
+    });
+
+    // Controls: Touch
+    gWrapper.addEventListener('touchmove', (e) => {
+      if (!gameRunning) return;
+      if (e.cancelable) e.preventDefault();
+      const rect = gCanvas.getBoundingClientRect();
+      player.targetX = e.touches[0].clientX - rect.left;
+    }, { passive: false });
+
+    // Controls: Keyboard
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+    });
+
+    // Mobile Buttons
+    const btnLeft = document.getElementById('btnMoveLeft');
+    const btnRight = document.getElementById('btnMoveRight');
+
+    const handleMobileMove = (dir) => {
+      if (!gameRunning) return;
+      player.targetX += dir * 45;
+    };
+
+    btnLeft.addEventListener('click', () => handleMobileMove(-1));
+    btnRight.addEventListener('click', () => handleMobileMove(1));
+
+    // Start / Restart Buttons
+    gameStartBtn.addEventListener('click', startGame);
+    gameRestartBtn.addEventListener('click', startGame);
+
+    // Initial canvas setup
+    window.addEventListener('load', () => {
+      resizeGameCanvas();
+    });
+  </script>
+</body>
+</html>
