@@ -513,6 +513,98 @@
       border-radius: 9999px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.15);
       white-space: nowrap;
+      transition: background 0.2s ease;
+    }
+
+    /* Nickname badge in online bar */
+    .user-badge {
+      background: white;
+      border: 1px solid #c4b5fd;
+      border-radius: 9999px;
+      padding: 0.25rem 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .user-color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .nickname-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 0.84rem;
+      width: 90px;
+      border-bottom: 1.5px dashed transparent;
+      transition: border-color 0.2s ease;
+    }
+    .nickname-input:hover, .nickname-input:focus {
+      border-bottom-color: var(--primary);
+    }
+
+    /* Drawing Toolbar Buttons (Pen, Eraser, Undo) */
+    .tool-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(237, 233, 254, 0.5);
+      padding: 0.25rem 0.4rem;
+      border-radius: 9999px;
+      border: 1px solid #e9d5ff;
+    }
+
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      border: 1.5px solid transparent;
+      background: white;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .tool-btn:hover {
+      background: #f5f3ff;
+      border-color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+    .tool-btn:active {
+      transform: scale(0.96);
+    }
+    .tool-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    }
+
+    .divider-v {
+      width: 1px;
+      height: 18px;
+      background: #d8b4fe;
+      margin: 0 0.15rem;
+    }
+
+    /* Eraser custom cursor */
+    .canvas-wrapper.eraser-mode canvas {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="white" stroke="%238b5cf6" stroke-width="2"/></svg>') 10 10, cell;
     }
 
     /* Mini Game Section */
@@ -747,24 +839,49 @@
           <span>🎨 배고픈 포도의 미니 아틀리에</span>
         </h2>
         <div class="canvas-controls">
+          <!-- Tools: Pen & Eraser & Undo -->
+          <div class="tool-group">
+            <button class="tool-btn active" id="toolPen" title="펜으로 그리기 (단축키 P)">✏️ 펜</button>
+            <button class="tool-btn" id="toolEraser" title="선 지우개 (단축키 E)">🧼 지우개</button>
+            <div class="divider-v"></div>
+            <button class="tool-btn" id="btnUndo" title="뒤로가기 / 실행 취소 (Ctrl+Z)">↩️ 뒤로가기</button>
+          </div>
+
+          <div class="divider-v"></div>
+
           <!-- Colors -->
-          <div class="color-dot active" style="background: #7c3aed;" data-color="#7c3aed" title="포도 보라"></div>
-          <div class="color-dot" style="background: #ec4899;" data-color="#ec4899" title="핑크"></div>
-          <div class="color-dot" style="background: #10b981;" data-color="#10b981" title="포도 잎사귀 초록"></div>
-          <div class="color-dot" style="background: #f59e0b;" data-color="#f59e0b" title="오렌지"></div>
-          <div class="color-dot" style="background: #1e1b4b;" data-color="#1e1b4b" title="다크 네이비"></div>
-          <!-- Clear Button -->
-          <button class="action-btn secondary" id="clearBtn" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; margin: 0;">
-            지우기 🧼
+          <div style="display: inline-flex; align-items: center; gap: 0.45rem;">
+            <div class="color-dot active" style="background: #7c3aed;" data-color="#7c3aed" title="포도 보라"></div>
+            <div class="color-dot" style="background: #ec4899;" data-color="#ec4899" title="핑크"></div>
+            <div class="color-dot" style="background: #10b981;" data-color="#10b981" title="포도 잎사귀 초록"></div>
+            <div class="color-dot" style="background: #f59e0b;" data-color="#f59e0b" title="오렌지"></div>
+            <div class="color-dot" style="background: #1e1b4b;" data-color="#1e1b4b" title="다크 네이비"></div>
+          </div>
+
+          <div class="divider-v"></div>
+
+          <!-- Clear All Button -->
+          <button class="action-btn secondary" id="clearBtn" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; margin: 0;" title="도화지 전체 비우기">
+            🗑️ 모두 지우기
           </button>
         </div>
       </div>
 
       <!-- Online Collaboration Bar -->
       <div class="online-collab-bar">
-        <div class="online-status-group">
-          <span class="status-dot" id="netStatusDot"></span>
-          <span id="netStatusText">혼자 그리는 중</span>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <div class="online-status-group">
+            <span class="status-dot" id="netStatusDot"></span>
+            <span id="netStatusText">혼자 그리는 중</span>
+          </div>
+
+          <!-- Nickname edit badge -->
+          <div class="user-badge" title="클릭해서 닉네임을 변경하세요">
+            <span class="user-color-dot" id="myColorDot" title="내 식별 색상"></span>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">닉네임:</span>
+            <input type="text" class="nickname-input" id="nicknameInput" value="배고픈 포도" maxlength="8" placeholder="닉네임 입력" />
+            <span style="font-size: 0.75rem; cursor: pointer;">✏️</span>
+          </div>
         </div>
 
         <div class="online-actions">
@@ -953,18 +1070,32 @@
     // 4. Drawing Canvas & Real-time Online Collaboration Logic
     const canvas = document.getElementById('paintCanvas');
     const ctx = canvas.getContext('2d');
+    const canvasWrapper = document.getElementById('canvasWrapper');
+
+    // Tool & Mode state
+    let currentTool = 'pen'; // 'pen' | 'eraser'
     let currentColor = '#7c3aed';
+    const PEN_WIDTH = 4;
+    const ERASER_WIDTH = 18;
     let isDrawing = false;
     let lastCursorBroadcast = 0;
 
-    // Remote drawing tracking
-    let isRemoteDrawing = false;
-    let remoteLastX = 0;
-    let remoteLastY = 0;
-    let remoteCursorTimer = null;
+    // Undo history stack
+    const undoStack = [];
+    const MAX_UNDO_STEPS = 25;
 
-    const remoteCursor = document.getElementById('remoteCursor');
-    const remoteCursorLabel = document.getElementById('remoteCursorLabel');
+    // User identity & Distinct palette
+    const USER_PALETTE = ['#7c3aed', '#ec4899', '#059669', '#d97706', '#2563eb', '#dc2626', '#0891b2', '#9333ea'];
+    const nicknameInput = document.getElementById('nicknameInput');
+    const myColorDot = document.getElementById('myColorDot');
+    let myNickname = localStorage.getItem('grape_user_nickname') || '배고픈 포도';
+    let myColor = '#7c3aed';
+    nicknameInput.value = myNickname;
+
+    // Multi-user Remote cursors & Remote drawing states map
+    const remoteCursors = new Map();      // authorId -> { element, timer }
+    const remoteDrawingStates = new Map(); // authorId -> { lastX, lastY }
+
     const netStatusDot = document.getElementById('netStatusDot');
     const netStatusText = document.getElementById('netStatusText');
     const myRoomCodeEl = document.getElementById('myRoomCode');
@@ -972,7 +1103,85 @@
     const btnCopyRoom = document.getElementById('btnCopyRoom');
     const btnJoinRoom = document.getElementById('btnJoinRoom');
 
-    // PeerJS Networking
+    const toolPen = document.getElementById('toolPen');
+    const toolEraser = document.getElementById('toolEraser');
+    const btnUndo = document.getElementById('btnUndo');
+
+    function setTool(tool) {
+      currentTool = tool;
+      if (tool === 'pen') {
+        toolPen.classList.add('active');
+        toolEraser.classList.remove('active');
+        canvasWrapper.classList.remove('eraser-mode');
+      } else {
+        toolEraser.classList.add('active');
+        toolPen.classList.remove('active');
+        canvasWrapper.classList.add('eraser-mode');
+      }
+    }
+
+    toolPen.addEventListener('click', () => setTool('pen'));
+    toolEraser.addEventListener('click', () => setTool('eraser'));
+
+    function saveUndoState() {
+      if (undoStack.length >= MAX_UNDO_STEPS) undoStack.shift();
+      undoStack.push(canvas.toDataURL());
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      const prevData = undoStack.pop();
+      const img = new Image();
+      img.onload = () => {
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        // Broadcast sync to connected friends
+        broadcastData({
+          type: 'sync_image',
+          data: prevData
+        });
+      };
+      img.src = prevData;
+    }
+
+    btnUndo.addEventListener('click', undo);
+
+    // Keyboard Shortcuts (Ctrl+Z: Undo, P: Pen, E: Eraser)
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        undo();
+      } else if (e.key === 'p' || e.key === 'P') {
+        setTool('pen');
+      } else if (e.key === 'e' || e.key === 'E') {
+        setTool('eraser');
+      }
+    });
+
+    // Nickname change handler
+    nicknameInput.addEventListener('input', () => {
+      myNickname = nicknameInput.value.trim() || '배고픈 포도';
+      localStorage.setItem('grape_user_nickname', myNickname);
+      broadcastData({
+        type: 'user_info',
+        authorId: myPeerId,
+        authorName: myNickname,
+        authorColor: myColor
+      });
+    });
+
+    function assignUserColor(id) {
+      let hash = 0;
+      for (let i = 0; i < id.length; i++) hash = (hash << 5) - hash + id.charCodeAt(i);
+      const idx = Math.abs(hash) % USER_PALETTE.length;
+      myColor = USER_PALETTE[idx];
+      currentColor = myColor;
+      if (myColorDot) myColorDot.style.background = myColor;
+    }
+
+    // PeerJS & Networking
     let peer = null;
     let myPeerId = '';
     const activeConnections = [];
@@ -983,29 +1192,56 @@
       netStatusText.textContent = text;
     }
 
-    function updateRemoteCursor(x, y, color, isDrawingState) {
-      if (!remoteCursor) return;
-      remoteCursor.style.left = x + 'px';
-      remoteCursor.style.top = y + 'px';
-      remoteCursor.classList.add('visible');
-
-      const dot = remoteCursor.querySelector('.remote-cursor-dot');
-      if (dot && color) {
-        dot.style.background = color;
-        dot.style.boxShadow = `0 0 8px ${color}`;
+    // Multi-user Remote Cursor Management
+    function getOrCreateRemoteCursor(authorId, authorName, authorColor) {
+      if (remoteCursors.has(authorId)) {
+        return remoteCursors.get(authorId);
       }
-      if (remoteCursorLabel) {
-        if (color) remoteCursorLabel.style.background = color;
-        remoteCursorLabel.textContent = isDrawingState ? '✏️ 친구 그리는 중' : '🎨 친구';
+      const el = document.createElement('div');
+      el.className = 'remote-cursor visible';
+      const c = authorColor || '#ec4899';
+      el.innerHTML = `
+        <div class="remote-cursor-dot" style="background: ${c}; box-shadow: 0 0 6px ${c};"></div>
+        <div class="remote-cursor-label" style="background: ${c};">${authorName || '친구'}</div>
+      `;
+      canvasWrapper.appendChild(el);
+      const obj = { element: el, timer: null };
+      remoteCursors.set(authorId, obj);
+      return obj;
+    }
+
+    function updateRemoteUserCursor(authorId, authorName, authorColor, x, y, isDrawingState, isEraser) {
+      const cursorObj = getOrCreateRemoteCursor(authorId, authorName, authorColor);
+      cursorObj.element.style.left = x + 'px';
+      cursorObj.element.style.top = y + 'px';
+      cursorObj.element.classList.add('visible');
+
+      const label = cursorObj.element.querySelector('.remote-cursor-label');
+      const dot = cursorObj.element.querySelector('.remote-cursor-dot');
+      if (authorColor) {
+        if (label) label.style.background = authorColor;
+        if (dot) {
+          dot.style.background = authorColor;
+          dot.style.boxShadow = `0 0 6px ${authorColor}`;
+        }
       }
 
-      clearTimeout(remoteCursorTimer);
-      remoteCursorTimer = setTimeout(() => {
-        remoteCursor.classList.remove('visible');
+      if (label) {
+        const name = authorName || '친구';
+        if (isDrawingState) {
+          label.textContent = isEraser ? `🧼 ${name} 지우는 중` : `✏️ ${name} 그리는 중`;
+        } else {
+          label.textContent = `🎨 ${name}`;
+        }
+      }
+
+      clearTimeout(cursorObj.timer);
+      cursorObj.timer = setTimeout(() => {
+        cursorObj.element.classList.remove('visible');
       }, 2500);
     }
 
-    // Local multi-tab channel (instant 0ms sync for same-machine tabs)
+    // Local multi-tab channel (BroadcastChannel)
     let localChannel = null;
 
     function setupBroadcastChannel(channelId) {
@@ -1027,21 +1263,21 @@
     }
 
     function broadcastData(payload) {
-      const packet = { ...payload, sender: myPeerId };
+      const packet = { ...payload, sender: myPeerId, authorId: myPeerId, authorName: myNickname, authorColor: myColor };
 
-      // 1. Send via local BroadcastChannel (cross-tab)
+      // 1. Local BroadcastChannel
       if (localChannel) {
         try {
           localChannel.postMessage(packet);
         } catch (e) {}
       }
 
-      // 2. Send via WebRTC DataChannel (across internet / devices)
+      // 2. WebRTC DataChannel
       for (let i = activeConnections.length - 1; i >= 0; i--) {
         const conn = activeConnections[i];
         if (conn && conn.open) {
           try {
-            conn.send(payload);
+            conn.send(packet);
           } catch (err) {
             console.error('Broadcasting error:', err);
           }
@@ -1055,45 +1291,54 @@
       const rect = canvas.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
 
+      const authorId = data.authorId || data.sender || 'remote';
+      const authorName = data.authorName || '친구';
+      const authorColor = data.authorColor || '#ec4899';
+
       if (data.type === 'stroke_start') {
-        isRemoteDrawing = true;
-        remoteLastX = data.x * rect.width;
-        remoteLastY = data.y * rect.height;
-        updateRemoteCursor(remoteLastX, remoteLastY, data.color || '#ec4899', true);
+        saveUndoState();
+        const startX = data.x * rect.width;
+        const startY = data.y * rect.height;
+        remoteDrawingStates.set(authorId, { lastX: startX, lastY: startY });
+        updateRemoteUserCursor(authorId, authorName, authorColor, startX, startY, true, data.isEraser);
       } else if (data.type === 'stroke_draw') {
-        if (!isRemoteDrawing) {
-          isRemoteDrawing = true;
-          remoteLastX = data.x * rect.width;
-          remoteLastY = data.y * rect.height;
-        }
+        let state = remoteDrawingStates.get(authorId);
         const curX = data.x * rect.width;
         const curY = data.y * rect.height;
 
+        if (!state) {
+          state = { lastX: curX, lastY: curY };
+          remoteDrawingStates.set(authorId, state);
+        }
+
         ctx.save();
-        ctx.strokeStyle = data.color || '#ec4899';
-        ctx.lineWidth = data.width || 4;
+        ctx.strokeStyle = data.isEraser ? '#ffffff' : (data.color || authorColor);
+        ctx.lineWidth = data.width || (data.isEraser ? ERASER_WIDTH : PEN_WIDTH);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(remoteLastX, remoteLastY);
+        ctx.moveTo(state.lastX, state.lastY);
         ctx.lineTo(curX, curY);
         ctx.stroke();
         ctx.restore();
 
-        remoteLastX = curX;
-        remoteLastY = curY;
-        updateRemoteCursor(curX, curY, data.color || '#ec4899', true);
+        state.lastX = curX;
+        state.lastY = curY;
+        updateRemoteUserCursor(authorId, authorName, authorColor, curX, curY, true, data.isEraser);
       } else if (data.type === 'stroke_end') {
-        isRemoteDrawing = false;
+        remoteDrawingStates.delete(authorId);
       } else if (data.type === 'cursor_move') {
         const curX = data.x * rect.width;
         const curY = data.y * rect.height;
-        updateRemoteCursor(curX, curY, data.color || '#ec4899', false);
+        updateRemoteUserCursor(authorId, authorName, authorColor, curX, curY, false, false);
       } else if (data.type === 'clear') {
+        saveUndoState();
         ctx.clearRect(0, 0, rect.width, rect.height);
       } else if (data.type === 'sync_image' && data.data) {
+        saveUndoState();
         const img = new Image();
         img.onload = () => {
+          ctx.clearRect(0, 0, rect.width, rect.height);
           ctx.drawImage(img, 0, 0, rect.width, rect.height);
         };
         img.src = data.data;
@@ -1115,7 +1360,10 @@
           try {
             conn.send({
               type: 'sync_image',
-              data: canvas.toDataURL()
+              data: canvas.toDataURL(),
+              authorId: myPeerId,
+              authorName: myNickname,
+              authorColor: myColor
             });
           } catch (e) {}
         }
@@ -1130,7 +1378,8 @@
         if (idx !== -1) activeConnections.splice(idx, 1);
         if (activeConnections.length === 0) {
           setNetStatus('offline', '혼자 그리는 중 (연결 종료)');
-          if (remoteCursor) remoteCursor.classList.remove('visible');
+          remoteCursors.forEach(c => c.element.remove());
+          remoteCursors.clear();
         } else {
           setNetStatus('connected', `🟢 실시간 협업 중 (${activeConnections.length}명 접속)`);
         }
@@ -1147,12 +1396,13 @@
       if (isPeerInitialized) return;
       isPeerInitialized = true;
 
-      // 1. Immediately generate and display a unique room ID
+      // 1. Immediately generate unique room ID and assign user distinct color
       const randCode = Math.floor(1000 + Math.random() * 9000);
       myPeerId = `grape-${randCode}`;
       if (myRoomCodeEl) {
         myRoomCodeEl.textContent = myPeerId;
       }
+      assignUserColor(myPeerId);
 
       // 2. Immediately enable BroadcastChannel for instant local cross-tab sync
       setupBroadcastChannel(myPeerId);
@@ -1276,8 +1526,8 @@
       ctx.scale(dpr, dpr);
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = currentTool === 'eraser' ? ERASER_WIDTH : PEN_WIDTH;
+      ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
 
       if (tempCanvas.width > 0 && tempCanvas.height > 0) {
         ctx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
@@ -1305,12 +1555,13 @@
     }
 
     function startDrawing(e) {
+      saveUndoState();
       isDrawing = true;
       const { x, y } = getCanvasPos(e);
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.strokeStyle = currentColor;
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+      ctx.lineWidth = currentTool === 'eraser' ? ERASER_WIDTH : PEN_WIDTH;
 
       const rect = canvas.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
@@ -1319,7 +1570,8 @@
           x: x / rect.width,
           y: y / rect.height,
           color: currentColor,
-          width: 4
+          isEraser: currentTool === 'eraser',
+          width: currentTool === 'eraser' ? ERASER_WIDTH : PEN_WIDTH
         });
       }
     }
@@ -1335,7 +1587,8 @@
             type: 'cursor_move',
             x: x / rect.width,
             y: y / rect.height,
-            color: currentColor
+            color: currentColor,
+            isEraser: currentTool === 'eraser'
           });
           lastCursorBroadcast = now;
         }
@@ -1352,7 +1605,8 @@
           x: x / rect.width,
           y: y / rect.height,
           color: currentColor,
-          width: 4
+          isEraser: currentTool === 'eraser',
+          width: currentTool === 'eraser' ? ERASER_WIDTH : PEN_WIDTH
         });
       }
     }
@@ -1381,14 +1635,21 @@
         colorDots.forEach(d => d.classList.remove('active'));
         dot.classList.add('active');
         currentColor = dot.getAttribute('data-color');
+        myColor = currentColor;
+        if (myColorDot) myColorDot.style.background = myColor;
+        // Automatically switch to pen mode when color is selected
+        setTool('pen');
       });
     });
 
-    // Clear Button
+    // Clear All Button
     document.getElementById('clearBtn').addEventListener('click', () => {
-      const rect = canvas.getBoundingClientRect();
-      ctx.clearRect(0, 0, rect.width, rect.height);
-      broadcastData({ type: 'clear' });
+      if (confirm('도화지를 모두 지우시겠습니까?')) {
+        saveUndoState();
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        broadcastData({ type: 'clear' });
+      }
     });
 
     // Download Button
@@ -1403,7 +1664,7 @@
       exportCtx.drawImage(canvas, 0, 0);
 
       const link = document.createElement('a');
-      link.download = '배고픈_포도의_그림.png';
+      link.download = `${myNickname}_그림.png`;
       link.href = exportCanvas.toDataURL('image/png');
       link.click();
     });
